@@ -3,8 +3,12 @@ using System.Runtime.InteropServices;
 
 namespace PropertyHook
 {
-    internal static class Kernel32
+    /// <summary>
+    /// Provides wrappers for process manipulation via kernel32.dll.
+    /// </summary>
+    public static class Kernel32
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const uint MEM_COMMIT = 0x1000;
         public const uint MEM_RESERVE = 0x2000;
         public const uint MEM_RESET = 0x8000;
@@ -245,5 +249,6 @@ namespace PropertyHook
             byte[] bytes = BitConverter.GetBytes(value);
             return WriteBytes(handle, address, bytes);
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }
