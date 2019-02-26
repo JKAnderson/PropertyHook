@@ -104,7 +104,7 @@ hook.Stop();
 ```
 
 <a name="phook"></a>
-# PHook Documentation
+# PHook Reference
 #### Properties
 * `Hooked` - whether the hook is attached to a process
 * `Process` - the attached process, if any
@@ -132,7 +132,7 @@ hook.Stop();
 * `Execute` - run a remote thread
 
 <a name="phpointer"></a>
-# PHPointer Documentation
+# PHPointer Reference
 #### Methods
 * `Resolve` - evaluates the base pointer and follows the offsets to find the final address
 
