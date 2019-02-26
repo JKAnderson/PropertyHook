@@ -13,10 +13,10 @@ Note: 64-bit processes can only be hooked if your application is running as 64-b
 ```cs
 public class SampleHook : PHook
 {
-	public SampleHook() : base(5000, 5000, p => p.ProcessName == "DarkSoulsRemastered")
-	{
-	
-	}
+    public SampleHook() : base(5000, 5000, p => p.ProcessName == "DarkSoulsRemastered")
+    {
+    
+    }
 }
 ```
 
@@ -30,16 +30,16 @@ AOB pointers are automatically rescanned whenever the application is hooked; the
 ```cs
 public class SampleHook : PHook
 {
-	private PHPointer WorldChrBase;
-	private PHPointer ChrData1;
-	private PHPointer ChrData2;
+    private PHPointer WorldChrBase;
+    private PHPointer ChrData1;
+    private PHPointer ChrData2;
 
-	public SampleHook() : base(5000, 5000, p => p.ProcessName == "DarkSoulsRemastered")
-	{
-		WorldChrBase = CreateBasePointer((IntPtr)0x141D151B0, 0);
-		ChrData1 = CreateChildPointer(WorldChrBase, 0x68);
-		ChrData2 = RegisterRelativeAOB("48 8B 05 ? ? ? ? 48 85 C0 ? ? F3 0F 58 80 AC 00 00 00", 3, 7, 0, 0x10);
-	}
+    public SampleHook() : base(5000, 5000, p => p.ProcessName == "DarkSoulsRemastered")
+    {
+        WorldChrBase = CreateBasePointer((IntPtr)0x141D151B0, 0);
+        ChrData1 = CreateChildPointer(WorldChrBase, 0x68);
+        ChrData2 = RegisterRelativeAOB("48 8B 05 ? ? ? ? 48 85 C0 ? ? F3 0F 58 80 AC 00 00 00", 3, 7, 0, 0x10);
+    }
 }
 ```
 
@@ -47,42 +47,42 @@ Finally, add whatever properties or methods you need to access specific values. 
 ```cs
 public class SampleHook : PHook
 {
-	// Constructor etc
+    // Constructor etc
 
-	public bool DeathCam
-	{
-		get => WorldChrBase.ReadBoolean(0x70);
-		set => WorldChrBase.WriteBoolean(0x70, value);
-	}
+    public bool DeathCam
+    {
+        get => WorldChrBase.ReadBoolean(0x70);
+        set => WorldChrBase.WriteBoolean(0x70, value);
+    }
 
-	public int Health
-	{
-		get => ChrData1.ReadInt32(0x3E8);
-		set => ChrData1.WriteInt32(0x3E8, value);
-	}
+    public int Health
+    {
+        get => ChrData1.ReadInt32(0x3E8);
+        set => ChrData1.WriteInt32(0x3E8, value);
+    }
 
-	public int Stamina
-	{
-		get => ChrData1.ReadInt32(0x3F8);
-		set => ChrData1.WriteInt32(0x3F8, value);
-	}
-	
-	public Stats GetStats()
-	{
-		Stats stats;
-		stats.Vitality = ChrData2.ReadInt32(0x40);
-		stats.Attunement = ChrData2.ReadInt32(0x48);
-		stats.Endurance = ChrData2.ReadInt32(0x50);
-		// etc
-		return stats;
-	}
+    public int Stamina
+    {
+        get => ChrData1.ReadInt32(0x3F8);
+        set => ChrData1.WriteInt32(0x3F8, value);
+    }
+    
+    public Stats GetStats()
+    {
+        Stats stats;
+        stats.Vitality = ChrData2.ReadInt32(0x40);
+        stats.Attunement = ChrData2.ReadInt32(0x48);
+        stats.Endurance = ChrData2.ReadInt32(0x50);
+        // etc
+        return stats;
+    }
 }
 
 public struct Stats
 {
-	public int Vitality;
-	public int Attunement;
-	public int Endurance;
+    public int Vitality;
+    public int Attunement;
+    public int Endurance;
 }
 ```
 
@@ -93,10 +93,10 @@ hook.Start();
 
 while (!Console.KeyAvailable)
 {
-	Console.WriteLine($"Health: {hook.Health,4}");
-	if (hook.Health < 200)
-		hook.Health += 200;
-	Thread.Sleep(100);
+    Console.WriteLine($"Health: {hook.Health,4}");
+    if (hook.Health < 200)
+        hook.Health += 200;
+    Thread.Sleep(100);
 }
 
 // Not strictly necessary; the hooking thread is a background thread, so it will exit automatically
