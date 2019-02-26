@@ -5,7 +5,7 @@ A .NET library targeting 4.6.1 that makes it easy to define an interface for ano
 [PHook Reference](#phook)  
 [PHPointer Reference](#phpointer)  
 
-<a name="using"/>
+<a name="using"></a>
 # Using PropertyHook
 The core of the library is the PHook class, which provides the interface to the target process through custom pointers and handles hooking, unhooking, and AOB scanning.  
 To configure your own hook, first create a derived class of PHook. The selector passed to the base constructor decides which processes are eligible for hooking.  
@@ -103,7 +103,7 @@ while (!Console.KeyAvailable)
 hook.Stop();
 ```
 
-<a name="phook"/>
+<a name="phook"></a>
 # PHook Documentation
 #### Properties
 * `Hooked` - whether the hook is attached to a process
@@ -131,7 +131,7 @@ hook.Stop();
 * `Free` - free a memory region
 * `Execute` - run a remote thread
 
-<a name="phpointer"/>
+<a name="phpointer"></a>
 # PHPointer Documentation
 #### Methods
 * `Resolve` - evaluates the base pointer and follows the offsets to find the final address
