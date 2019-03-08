@@ -198,7 +198,7 @@ namespace PropertyHook
         /// </summary>
         public PHPointer RegisterAbsoluteAOB(byte?[] aob, params int[] offsets)
         {
-            var pointer = new PHPointerAOBAbsolute(this, aob);
+            var pointer = new PHPointerAOBAbsolute(this, aob, offsets);
             AOBPointers.Add(pointer);
             return pointer;
         }
