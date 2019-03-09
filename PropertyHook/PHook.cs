@@ -124,12 +124,20 @@ namespace PropertyHook
                     bool is64Bit = false;
                     try
                     {
-                        if (Environment.Is64BitOperatingSystem && !process.HasExited)
+                        close = cleanup || !Selector(process) || process.HasExited || (DateTime.Now - process.StartTime).TotalMilliseconds < MinLifetime;
+                        if (!close && Environment.Is64BitOperatingSystem)
                         {
+                            // This is actually really slow, so only do it if everything else passed
                             if (Kernel32.IsWow64Process(process.Handle, out bool result))
+                            {
                                 is64Bit = !result;
+                                close |= is64Bit && !Environment.Is64BitProcess;
+                            }
+                            else
+                            {
+                                close = true;
+                            }
                         }
-                        close = cleanup || !Selector(process) || process.HasExited || (is64Bit && !Environment.Is64BitProcess) || (DateTime.Now - process.StartTime).TotalMilliseconds < MinLifetime;
                     }
                     catch (Win32Exception)
                     {
