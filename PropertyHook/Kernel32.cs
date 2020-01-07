@@ -37,7 +37,7 @@ namespace PropertyHook
             public IntPtr BaseAddress;
             public IntPtr AllocationBase;
             public uint AllocationProtect;
-            public ulong RegionSize;
+            public IntPtr RegionSize;
             public uint State;
             public uint Protect;
             public uint Type;
