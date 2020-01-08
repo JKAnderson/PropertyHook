@@ -9,17 +9,11 @@ namespace PropertyHook
     public static class Kernel32
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public const uint MEM_COMMIT = 0x1000;
-        public const uint MEM_RESERVE = 0x2000;
-        public const uint MEM_RESET = 0x8000;
-        public const uint MEM_PHYSICAL = 0x400000;
-        public const uint MEM_RESET_UNDO = 0x1000000;
-        public const uint MEM_LARGE_PAGES = 0x20000000;
-
-        public const uint PAGE_NOACCESS = 0x1;
-        public const uint PAGE_READONLY = 0x2;
-        public const uint PAGE_READWRITE = 0x4;
-        public const uint PAGE_WRITECOPY = 0x8;
+        #region Constants from winnt.h
+        public const uint PAGE_NOACCESS = 0x01;
+        public const uint PAGE_READONLY = 0x02;
+        public const uint PAGE_READWRITE = 0x04;
+        public const uint PAGE_WRITECOPY = 0x08;
         public const uint PAGE_EXECUTE = 0x10;
         public const uint PAGE_EXECUTE_READ = 0x20;
         public const uint PAGE_EXECUTE_READWRITE = 0x40;
@@ -27,9 +21,33 @@ namespace PropertyHook
         public const uint PAGE_GUARD = 0x100;
         public const uint PAGE_NOCACHE = 0x200;
         public const uint PAGE_WRITECOMBINE = 0x400;
+        public const uint PAGE_ENCLAVE_THREAD_CONTROL = 0x80000000;
+        public const uint PAGE_REVERT_TO_FILE_MAP = 0x80000000;
+        public const uint PAGE_TARGETS_NO_UPDATE = 0x40000000;
         public const uint PAGE_TARGETS_INVALID = 0x40000000;
-        public const uint PAGE_TARGETS_NO_UPDATE = 0x4000000;
-        public const uint PAGE_EXECUTE_ANY = PAGE_EXECUTE | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY;
+        public const uint PAGE_ENCLAVE_UNVALIDATED = 0x20000000;
+        public const uint PAGE_ENCLAVE_DECOMMIT = 0x10000000;
+        public const uint MEM_COMMIT = 0x00001000;
+        public const uint MEM_RESERVE = 0x00002000;
+        public const uint MEM_REPLACE_PLACEHOLDER = 0x00004000;
+        public const uint MEM_RESERVE_PLACEHOLDER = 0x00040000;
+        public const uint MEM_RESET = 0x00080000;
+        public const uint MEM_TOP_DOWN = 0x00100000;
+        public const uint MEM_WRITE_WATCH = 0x00200000;
+        public const uint MEM_PHYSICAL = 0x00400000;
+        public const uint MEM_ROTATE = 0x00800000;
+        public const uint MEM_DIFFERENT_IMAGE_BASE_OK = 0x00800000;
+        public const uint MEM_RESET_UNDO = 0x01000000;
+        public const uint MEM_LARGE_PAGES = 0x20000000;
+        public const uint MEM_4MB_PAGES = 0x80000000;
+        public const uint MEM_64K_PAGES = MEM_LARGE_PAGES | MEM_PHYSICAL;
+        public const uint MEM_UNMAP_WITH_TRANSIENT_BOOST = 0x00000001;
+        public const uint MEM_COALESCE_PLACEHOLDERS = 0x00000001;
+        public const uint MEM_PRESERVE_PLACEHOLDER = 0x00000002;
+        public const uint MEM_DECOMMIT = 0x00004000;
+        public const uint MEM_RELEASE = 0x00008000;
+        public const uint MEM_FREE = 0x00010000;
+        #endregion
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORY_BASIC_INFORMATION
@@ -53,34 +71,34 @@ namespace PropertyHook
         public static extern bool IsWow64Process(IntPtr hProcess, out bool Wow64Process);
 
         [DllImport("kernel32.dll")]
-        public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, uint lpNumberOfBytesRead);
+        public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, IntPtr nSize, IntPtr lpNumberOfBytesRead);
 
         [DllImport("kernel32.dll")]
-        public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+        public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
 
         [DllImport("kernel32.dll")]
-        public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION lpBuffer, uint dwLength);
+        public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint dwFreeType);
 
         [DllImport("kernel32.dll")]
-        public static extern int WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+        public static extern uint VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION lpBuffer, IntPtr dwLength);
 
         [DllImport("kernel32.dll")]
-        public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, uint lpNumberOfBytesWritten);
+        public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, IntPtr nSize, IntPtr lpNumberOfBytesWritten);
 
 
         public static byte[] ReadBytes(IntPtr handle, IntPtr address, uint length)
         {
             byte[] bytes = new byte[length];
-            ReadProcessMemory(handle, address, bytes, length, 0);
+            ReadProcessMemory(handle, address, bytes, (IntPtr)length, IntPtr.Zero);
             return bytes;
         }
 
         public static bool WriteBytes(IntPtr handle, IntPtr address, byte[] bytes)
         {
-            return WriteProcessMemory(handle, address, bytes, (uint)bytes.Length, 0);
+            return WriteProcessMemory(handle, address, bytes, (IntPtr)bytes.Length, IntPtr.Zero);
         }
 
         public static IntPtr ReadIntPtr(IntPtr handle, IntPtr address, bool is64bit)

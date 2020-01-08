@@ -266,7 +266,7 @@ namespace PropertyHook
         /// </summary>
         public IntPtr Allocate(uint size, uint flProtect = Kernel32.PAGE_READWRITE)
         {
-            return Kernel32.VirtualAllocEx(Handle, IntPtr.Zero, size, Kernel32.MEM_COMMIT, flProtect);
+            return Kernel32.VirtualAllocEx(Handle, IntPtr.Zero, (IntPtr)size, Kernel32.MEM_COMMIT, flProtect);
         }
 
         /// <summary>
@@ -274,16 +274,16 @@ namespace PropertyHook
         /// </summary>
         public bool Free(IntPtr address)
         {
-            return Kernel32.VirtualFreeEx(Handle, address, 0, Kernel32.MEM_RESET);
+            return Kernel32.VirtualFreeEx(Handle, address, IntPtr.Zero, Kernel32.MEM_RELEASE);
         }
 
         /// <summary>
         /// Starts a thread at the given address and waits for it to complete. Returns execution result.
         /// </summary>
-        public int Execute(IntPtr address, uint timeout = 0xFFFFFFFF)
+        public uint Execute(IntPtr address, uint timeout = 0xFFFFFFFF)
         {
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, address, IntPtr.Zero, 0, IntPtr.Zero);
-            int result = Kernel32.WaitForSingleObject(thread, timeout);
+            uint result = Kernel32.WaitForSingleObject(thread, timeout);
             Kernel32.CloseHandle(thread);
             return result;
         }
@@ -291,11 +291,11 @@ namespace PropertyHook
         /// <summary>
         /// Allocates memory for the given bytes, starts a thread at their address, waits for it to complete, and frees the memory. Returns execution result.
         /// </summary>
-        public int Execute(byte[] bytes, uint timeout = 0xFFFFFFFF)
+        public uint Execute(byte[] bytes, uint timeout = 0xFFFFFFFF)
         {
             IntPtr address = Allocate((uint)bytes.Length, Kernel32.PAGE_EXECUTE_READWRITE);
             Kernel32.WriteBytes(Handle, address, bytes);
-            int result = Execute(address, timeout);
+            uint result = Execute(address, timeout);
             Free(address);
             return result;
         }
