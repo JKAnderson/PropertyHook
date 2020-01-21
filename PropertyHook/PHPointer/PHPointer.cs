@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace PropertyHook
 {
@@ -270,6 +271,23 @@ namespace PropertyHook
         public bool WriteDouble(int offset, double value)
         {
             return Kernel32.WriteDouble(Hook.Handle, Resolve() + offset, value);
+        }
+
+
+        /// <summary>
+        /// Reads and decodes a fixed amount of bytes as a string. If trim is set, terminates after the first null character.
+        /// </summary>
+        public string ReadString(int offset, Encoding encoding, uint byteCount, bool trim = true)
+        {
+            return Kernel32.ReadString(Hook.Handle, Resolve() + offset, encoding, byteCount, trim);
+        }
+
+        /// <summary>
+        /// Encodes and writes a string as a fixed amount of bytes. If the string is too long to fit, it is truncated before encoding.
+        /// </summary>
+        public bool WriteString(int offset, Encoding encoding, uint byteCount, string value)
+        {
+            return Kernel32.WriteString(Hook.Handle, Resolve() + offset, encoding, byteCount, value);
         }
     }
 }

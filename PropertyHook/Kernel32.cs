@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace PropertyHook
 {
@@ -265,6 +266,32 @@ namespace PropertyHook
         public static bool WriteDouble(IntPtr handle, IntPtr address, double value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
+            return WriteBytes(handle, address, bytes);
+        }
+
+
+        public static string ReadString(IntPtr handle, IntPtr address, Encoding encoding, uint byteCount, bool trim = true)
+        {
+            byte[] bytes = ReadBytes(handle, address, byteCount);
+            string value = encoding.GetString(bytes);
+            if (trim)
+            {
+                int term = value.IndexOf('\0');
+                if (term != -1)
+                    value = value.Substring(0, term);
+            }
+            return value;
+        }
+
+        public static bool WriteString(IntPtr handle, IntPtr address, Encoding encoding, uint byteCount, string value)
+        {
+            char[] chars = value.ToCharArray();
+            int charCount = chars.Length;
+            while (encoding.GetByteCount(chars, 0, charCount) > byteCount)
+                charCount--;
+
+            byte[] bytes = new byte[byteCount];
+            encoding.GetBytes(chars, 0, charCount, bytes, 0);
             return WriteBytes(handle, address, bytes);
         }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

@@ -163,3 +163,5 @@ Each read and write method first resolves the address, then moves forward by the
 * `WriteSingle`
 * `ReadDouble`
 * `WriteDouble`
+* `ReadString` - reads a fixed-length string with a specified encoding
+* `WriteString` - writes a fixed-length string with a specified encoding
