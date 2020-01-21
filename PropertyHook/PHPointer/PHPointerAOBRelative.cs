@@ -26,12 +26,18 @@ namespace PropertyHook
             InstructionSize = instructionSize;
         }
 
-        internal override void ScanAOB(AOBScanner scanner)
+        internal override bool ScanAOB(AOBScanner scanner)
         {
             IntPtr result = scanner.Scan(AOB);
-            IntPtr temp = result + AddressOffset;
-            uint address = Kernel32.ReadUInt32(Hook.Handle, temp);
+            if (result == IntPtr.Zero)
+            {
+                AOBResult = result;
+                return false;
+            }
+
+            uint address = Kernel32.ReadUInt32(Hook.Handle, result + AddressOffset);
             AOBResult = (IntPtr)((ulong)(result + InstructionSize) + address);
+            return true;
         }
     }
 }

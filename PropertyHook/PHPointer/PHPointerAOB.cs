@@ -33,7 +33,7 @@ namespace PropertyHook
             return AOBResult;
         }
 
-        internal abstract void ScanAOB(AOBScanner scanner);
+        internal abstract bool ScanAOB(AOBScanner scanner);
 
         internal void DumpAOB()
         {

@@ -42,6 +42,11 @@ namespace PropertyHook
         public int MinLifetime { get; set; }
 
         /// <summary>
+        /// Indicates whether all AOB scans found a match during the last scan. Always false when unhooked.
+        /// </summary>
+        public bool AOBScanSucceeded { get; private set; }
+
+        /// <summary>
         /// Fires immediately after attaching to a new process.
         /// </summary>
         public event EventHandler<PHEventArgs> OnHooked;
@@ -156,14 +161,16 @@ namespace PropertyHook
                         process.EnableRaisingEvents = true;
                         process.Exited += Unhook;
 
+                        bool aobSuccess = true;
                         if (AOBPointers.Count > 0)
                         {
                             var scanner = new AOBScanner(process);
                             foreach (PHPointerAOB pointer in AOBPointers)
                             {
-                                pointer.ScanAOB(scanner);
+                                aobSuccess &= pointer.ScanAOB(scanner);
                             }
                         }
+                        AOBScanSucceeded = aobSuccess;
 
                         Hooked = true;
                         RaiseOnHooked();
@@ -175,6 +182,7 @@ namespace PropertyHook
         private void Unhook(object sender, EventArgs e)
         {
             Hooked = false;
+            AOBScanSucceeded = false;
             foreach (PHPointerAOB pointer in AOBPointers)
             {
                 pointer.DumpAOB();
@@ -251,13 +259,18 @@ namespace PropertyHook
         /// </summary>
         public void RescanAOB()
         {
-            if (Hooked && AOBPointers.Count > 0)
+            if (Hooked)
             {
-                var scanner = new AOBScanner(Process);
-                foreach (PHPointerAOB pointer in AOBPointers)
+                bool aobSuccess = true;
+                if (AOBPointers.Count > 0)
                 {
-                    pointer.ScanAOB(scanner);
+                    var scanner = new AOBScanner(Process);
+                    foreach (PHPointerAOB pointer in AOBPointers)
+                    {
+                        aobSuccess &= pointer.ScanAOB(scanner);
+                    }
                 }
+                AOBScanSucceeded = aobSuccess;
             }
         }
 

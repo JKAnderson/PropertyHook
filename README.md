@@ -112,6 +112,7 @@ hook.Stop();
 * `Handle` - the handle to the attached process, if any
 * `RefreshInterval` - how often the hooking thread will check for new processes
 * `MinLifetime` - minimum time a process must be running before it will be hooked
+* `AOBScanSucceeded` - whether all AOBs found a match during the last scan
 
 #### Events
 * `OnHooked` - fires after attaching to a process
